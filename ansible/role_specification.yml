@@ -1,0 +1,108 @@
+# Copyright 2015 47Lining LLC.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+
+role_specification:
+  - role_name: NucleatorRedshiftServiceRunner
+    trust_policy:
+      Version : "2008-10-17"
+      Statement :
+        - Effect : Allow
+          Sid : NucleatorRedshiftServiceRunnerTrustPolicy
+          Principal :
+            Service : ec2.amazonaws.com
+          Action : sts:AssumeRole
+    access_policies:
+  - role_name: NucleatorRedshiftProvisioner
+    trust_policy:
+      Version : "2008-10-17"
+      Statement :
+        - Effect : Allow
+          Sid : NucleatorRedshiftProvisionerTrustPolicy
+          Principal :
+            AWS : "arn:aws:iam::{{ aws_accounts[cage_names['build']['account']]['account_number'] }}:role/NucleatorAgent"
+          Action : sts:AssumeRole
+    access_policies:
+      - policy_name: NucleatorRedshiftProvisionerAccessPolicy
+        policy_document:
+          Statement :
+            - Effect : Allow
+              Action: 
+                - "cloudformation:CreateStack"
+                - "cloudformation:UpdateStack"
+                - "cloudformation:DescribeStacks"
+                - "cloudformation:DescribeStackEvents"
+              Resource: arn:aws:cloudformation:*
+            - Effect: Allow
+              Action: 
+                - "s3:ListBucket"
+                - "s3:PutObject"
+                - "s3:GetObject"
+              Resource: arn:aws:s3:::*
+            - Effect: Allow
+              Action: 
+                - "ec2:DescribeKeyPairs"
+                - "ec2:DescribeAddresses"
+                - "ec2:CreateSecurityGroup"
+                - "ec2:DescribeSecurityGroups"
+                - "ec2:DescribeSubnets"
+                - "ec2:DescribeVpcs"
+                - "ec2:AuthorizeSecurityGroupIngress"
+                - "ec2:AuthorizeSecurityGroupEgress"
+                - "ec2:RevokeSecurityGroupEgress"
+                - "ec2:CreateTags"
+                - "ec2:DescribeInternetGateways"
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - "redshift:CreateClusterParameterGroup"
+                - "redshift:CreateClusterSubnetGroup"
+                - "redshift:ModifyClusterParameterGroup"
+                - "redshift:CreateCluster"
+                - "redshift:DescribeClusters"
+              Resource: '*'
+  - role_name: NucleatorRedshiftDeleter
+    trust_policy:
+      Version : "2008-10-17"
+      Statement :
+        - Effect : Allow
+          Sid : NucleatorRedshiftDeleterTrustPolicy
+          Principal :
+            AWS : "arn:aws:iam::{{ aws_accounts[cage_names['build']['account']]['account_number'] }}:role/NucleatorAgent"
+          Action : sts:AssumeRole
+    access_policies:
+      - policy_name: NucleatorRedshiftDeleterAccessPolicy
+        policy_document:
+          Statement :
+            - Effect : Allow
+              Action: 
+                - "cloudformation:DescribeStacks"
+                - "cloudformation:DeleteStack"
+                - "cloudformation:DescribeStackEvents"
+              Resource: arn:aws:cloudformation:*
+            - Effect: Allow
+              Action: 
+                - "ec2:DeleteSecurityGroup"
+                - "ec2:RevokeSecurityGroupEgress"
+                - "ec2:RevokeSecurityGroupIngress"
+                - "ec2:DescribeSecurityGroups"
+                - "ec2:AuthorizeSecurityGroupEgress"
+              Resource: '*'
+            - Effect: Allow
+              Action: 
+                - "redshift:DeleteCluster"
+                - "redshift:DeleteClusterParameterGroup"
+                - "redshift:DeleteClusterSubnetGroup"
+                - "redshift:DescribeClusters"
+              Resource: '*'
