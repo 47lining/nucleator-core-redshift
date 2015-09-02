@@ -21,6 +21,9 @@ stackset_instance_name: "{{cli_stackset_instance_name}}"
 vpc_id: "{{ cage_provision_stack['stack_outputs'][ 'VpcId' ] }}"
 nat_security_group_id: "{{ cage_provision_stack['stack_outputs'][ 'NatSecurityGroupId' ] }}"
 bastion_security_group_id: "{{ cage_provision_stack['stack_outputs'][ 'BastionSecurityGroupId' ] }}"
+public_network_acl_id: "{{ cage_provision_stack['stack_outputs'][ 'PublicNetworkAclId' ] }}"
+private_network_acl_id: "{{ cage_provision_stack['stack_outputs'][ 'PrivateNetworkAclId' ] }}"
+database_network_acl_id: "{{ cage_provision_stack['stack_outputs'][ 'DatabaseNetworkAclId' ] }}"
 public_subnet1_id: "{{ cage_provision_stack['stack_outputs'][ 'PublicSubnet1Id' ] }}"
 public_subnet2_id: "{{ cage_provision_stack['stack_outputs'][ 'PublicSubnet2Id' ] }}"
 private_subnet1_id: "{{ cage_provision_stack['stack_outputs'][ 'PrivateSubnet1Id' ] }}"
@@ -29,3 +32,7 @@ database_subnet_group_id: "{{ cage_provision_stack['stack_outputs'][ 'DatabaseSu
 database_subnet1_id: "{{ cage_provision_stack['stack_outputs'][ 'DatabaseSubnet1Id' ] }}"
 database_subnet2_id: "{{ cage_provision_stack['stack_outputs'][ 'DatabaseSubnet2Id' ] }}"
 
+# Redshift database subnet group id's - vary based on is_public
+
+redshift_subnet1_id: "{{ public_subnet1_id if is_public else database_subnet1_id }}"
+redshift_subnet2_id: "{{ public_subnet2_id if is_public else database_subnet2_id }}"

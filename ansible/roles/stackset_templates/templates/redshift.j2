@@ -95,6 +95,21 @@
         "Description": "SecurityGroupId for bastion hosts"
     },
 
+    "PublicNetworkAclId": {
+        "Type": "String",
+        "Description": "Public Network ACL ID"
+    },
+
+    "PrivateNetworkAclId": {
+        "Type": "String",
+        "Description": "Private Network ACL ID"
+    },
+
+    "DatabaseNetworkAclId": {
+        "Type": "String",
+        "Description": "Database Network ACL ID"
+    },
+
     "PublicSubnet1Id": {
         "Type": "String",
         "Description": "Public Subnet 1 ID"
@@ -133,12 +148,11 @@
 
   "Resources": {
 
-
     "RedshiftDBSubnetGroup" : {
       "Type" : "AWS::Redshift::ClusterSubnetGroup",
       "Properties" : {
         "Description" : "Redshift db subnet group",
-        "SubnetIds" : [ { "Ref": "PublicSubnet1Id" },  { "Ref": "PublicSubnet2Id" } ]
+        "SubnetIds" : [ {{redshift_subnet1_id}}, {{redshift_subnet2_id}} ]
       }
     },
 
@@ -148,7 +162,7 @@
         "GroupDescription" : "Redshift security group",
         "VpcId" : { "Ref" : "VpcId" },
         "SecurityGroupIngress" : [ {
-          "CidrIp" : "0.0.0.0/0",
+          "CidrIp" : "{{ '0.0.0.0/0' if is_public else network_topology["vpc_cidr"] }}",
           "FromPort" : { "Ref" : "PortNumber" },
           "ToPort" : { "Ref" : "PortNumber" },
           "IpProtocol" : "tcp"
@@ -235,7 +249,7 @@
          "IpProtocol": "tcp",
          "FromPort": { "Ref" : "PortNumber" },
          "ToPort": { "Ref" : "PortNumber" },
-         "CidrIp": "0.0.0.0/0"
+          "CidrIp" : "{{ '0.0.0.0/0' if is_public else network_topology["vpc_cidr"] }}"
       }
     },
 
