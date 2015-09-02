@@ -26,3 +26,14 @@ def djb2(source_string, size=16384):
 
     # Output: integer between 0 and size-1 (inclusive)
     return hash%size
+
+class FilterModule(object):
+    ''' Nucleator Redshift Stackset jinja2 filters '''
+
+    def filters(self):
+        ''' return a dict mapping filter names to filter functions. '''
+        return {
+            # Simple hash function to hash a string, based on Dan Bernstein's djb2     
+            'djb2': djb2,
+
+        }

@@ -22,7 +22,7 @@ redshift_database_acl:
         RuleNumber: '{{ 1024 + cluster_name | djb2 }}'
         Protocol: 6 #tcp
         RuleAction: allow
-        CidrBlock: '{{ network_topology.vpc_cidr }}'
+        CidrBlock: "{{ '0.0.0.0/0' if is_public|bool else network_topology.vpc_cidr }}"
         PortRange:
           From: 5439
           To: 5439
