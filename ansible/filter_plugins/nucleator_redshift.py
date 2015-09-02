@@ -12,17 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-redshift_database_acl:
+def djb2(source_string, size=16384):
+    # Simple hash function to hash a string, based on Dan Bernstein's djb2
+    # Input: source_string - a string that is to be hashed
+    # Input: size - an integer (table size) for modular division
+    
+    # arbitrary large prime number to initialize
+    hash = 3313
 
-  inbound_entries:
-    - name: InboundRedshiftDbNeworkAclEntry
-      properties:
-        # Hash the cluster name to attempt a unique ACL Rule Number
-        # In practice there is a small probability of a collision
-        RuleNumber: '{{ 1024 + cluster_name | djb2 }}'
-        Protocol: 6 #tcp
-        RuleAction: allow
-        CidrBlock: '{{ network_topology.vpc_cidr }}'
-        PortRange:
-          From: 5439
-          To: 5439
+    # hash(i) = hash(i-1) * 33 + str[i]
+    for char in source_string:
+        hash = ((hash << 5) + hash) + ord(char)
+
+    # Output: integer between 0 and size-1 (inclusive)
+    return hash%size

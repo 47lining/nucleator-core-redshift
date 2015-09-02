@@ -148,11 +148,40 @@
 
   "Resources": {
 
+      "RedshiftDnsRecord": {
+          "Type": "AWS::Route53::RecordSet",
+          "Properties": {
+              "HostedZoneName": "{{ cage_name }}.{{customer_domain}}.",
+              "Comment": "CNAME record for {{stackset_instance_name}} redshift cluster",
+              "Name": "{{stackset_instance_name}}.{{cage_name}}.{{customer_domain}}",
+              "Type": "CNAME",
+              "TTL": "300",
+              "ResourceRecords": [
+                  {
+			"Fn::GetAtt": [ "{{ cluster_name }}", "Endpoint.Address" ]
+                  }
+              ]
+          }
+      },
+
+    {% for entry in redshift_database_acl.inbound_entries %}
+    "{{entry.name}}" : {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "Properties": {
+         "NetworkAclId": {
+           "Ref": "PublicNetworkAcl"
+          },
+          "Egress": "false",
+          {{entry.properties | to_json_fragment}}
+      }
+    },
+    {% endfor %}
+
     "RedshiftDBSubnetGroup" : {
       "Type" : "AWS::Redshift::ClusterSubnetGroup",
       "Properties" : {
         "Description" : "Redshift db subnet group",
-        "SubnetIds" : [ {{redshift_subnet1_id}}, {{redshift_subnet2_id}} ]
+        "SubnetIds" : [ "{{redshift_subnet1_id}}", "{{redshift_subnet2_id}}" ]
       }
     },
 
@@ -162,7 +191,7 @@
         "GroupDescription" : "Redshift security group",
         "VpcId" : { "Ref" : "VpcId" },
         "SecurityGroupIngress" : [ {
-          "CidrIp" : "{{ '0.0.0.0/0' if is_public else network_topology["vpc_cidr"] }}",
+          "CidrIp" : "{{ '0.0.0.0/0' if is_public|bool else network_topology['vpc_cidr'] }}",
           "FromPort" : { "Ref" : "PortNumber" },
           "ToPort" : { "Ref" : "PortNumber" },
           "IpProtocol" : "tcp"
@@ -249,7 +278,7 @@
          "IpProtocol": "tcp",
          "FromPort": { "Ref" : "PortNumber" },
          "ToPort": { "Ref" : "PortNumber" },
-          "CidrIp" : "{{ '0.0.0.0/0' if is_public else network_topology["vpc_cidr"] }}"
+          "CidrIp" : "{{ '0.0.0.0/0' if is_public|bool else network_topology['vpc_cidr'] }}"
       }
     },
 
