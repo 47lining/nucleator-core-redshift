@@ -34,5 +34,5 @@ database_subnet2_id: "{{ cage_provision_stack['stack_outputs'][ 'DatabaseSubnet2
 
 # Redshift database subnet group id's - vary based on is_public
 
-redshift_subnet1_id: "{{ public_subnet1_id if is_public else database_subnet1_id }}"
-redshift_subnet2_id: "{{ public_subnet2_id if is_public else database_subnet2_id }}"
+redshift_subnet1_id: "{{ public_subnet1_id if is_public|bool else database_subnet1_id }}"
+redshift_subnet2_id: "{{ public_subnet2_id if is_public|bool else database_subnet2_id }}"

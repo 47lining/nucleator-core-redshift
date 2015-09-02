@@ -191,7 +191,7 @@
         "GroupDescription" : "Redshift security group",
         "VpcId" : { "Ref" : "VpcId" },
         "SecurityGroupIngress" : [ {
-          "CidrIp" : "{{ '0.0.0.0/0' if is_public|bool else network_topology.vpc_cidr] }}",
+          "CidrIp" : "{{ '0.0.0.0/0' if is_public|bool else network_topology.vpc_cidr }}",
           "FromPort" : { "Ref" : "PortNumber" },
           "ToPort" : { "Ref" : "PortNumber" },
           "IpProtocol" : "tcp"
