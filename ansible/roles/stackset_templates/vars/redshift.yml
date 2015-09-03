@@ -24,5 +24,7 @@ redshift_database_acl:
         RuleAction: allow
         CidrBlock: "{{ '0.0.0.0/0' if is_public|bool else network_topology.vpc_cidr }}"
         PortRange:
-          From: 5439
-          To: 5439
+          From:
+            Ref: "PortNumber"
+          To:
+            Ref: "PortNumber"

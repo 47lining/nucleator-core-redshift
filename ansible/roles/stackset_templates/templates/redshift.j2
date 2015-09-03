@@ -219,10 +219,10 @@
                             "Fn::Join": [
                                 ".",
                                 [
-                                    "security.redshift",
-                                    {
-                                        "Ref": "CageName"
-                                    },
+                                    "security",
+				    "{{ cluster_name }}",
+                                    "{{ cage_name }}",
+				    "{{ customer_name }}",
                                     "unresolvable"
                                 ]
                             ]
@@ -288,6 +288,7 @@
         "ClusterType": { "Ref": "ClusterType" },
         "NumberOfNodes": { "Fn::If": [ "IsMultiNodeCluster", { "Ref": "NumberOfNodes" }, { "Ref": "AWS::NoValue" } ] },
         "NodeType": { "Ref": "NodeType" },
+	"Port": { "Ref" : "PortNumber" },
         "DBName": { "Ref": "DatabaseName" },
         "Encrypted": { "Ref": "Encrypted" },
         "PubliclyAccessible": { "Ref": "Public" },
@@ -318,6 +319,10 @@
       "Description" : "Endpoint for the newly created RedShift cluster",
       "Value": {
         "Fn::Join": [ ":", [ { "Fn::GetAtt": [ "{{ cluster_name }}", "Endpoint.Address" ] }, { "Fn::GetAtt": [ "{{ cluster_name }}", "Endpoint.Port" ] } ] ] }
+    },
+    "ClusterCname": {
+      "Description" : "Convenience CNAME for the newly created RedShift cluster",
+      "Value": "{{stackset_instance_name}}.{{cage_name}}.{{customer_domain}}"
     }
   }
 }
