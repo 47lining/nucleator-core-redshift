@@ -108,6 +108,7 @@ role_specification:
                 - "ec2:DescribeSecurityGroups"
                 - "ec2:AuthorizeSecurityGroupEgress"
                 - "ec2:DeleteNetworkAclEntry"
+                - "ec2:DescribeNetworkAcls"
               Resource: '*'
             - Effect: Allow
               Action: 
