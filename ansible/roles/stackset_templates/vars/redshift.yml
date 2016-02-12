@@ -11,5 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
----
 
+redshift_database_acl:
+
+  inbound_entries:
+    - name: InboundRedshiftDbNeworkAclEntry
+      properties:
+        # Hash the cluster name to attempt a unique ACL Rule Number
+        # In practice there is a small probability of a collision
+        RuleNumber: '{{ 1024 + cluster_name | djb2 }}'
+        Protocol: 6 #tcp
+        RuleAction: allow
+        CidrBlock: "{{ '0.0.0.0/0' if is_public|bool else network_topology.vpc_cidr }}"
+        PortRange:
+          From:
+            Ref: "PortNumber"
+          To:
+            Ref: "PortNumber"

@@ -63,6 +63,8 @@ role_specification:
                 - "ec2:RevokeSecurityGroupEgress"
                 - "ec2:CreateTags"
                 - "ec2:DescribeInternetGateways"
+                - "ec2:DescribeNetworkAcls"
+                - "ec2:CreateNetworkAclEntry"
               Resource: '*'
             - Effect: Allow
               Action:
@@ -71,6 +73,13 @@ role_specification:
                 - "redshift:ModifyClusterParameterGroup"
                 - "redshift:CreateCluster"
                 - "redshift:DescribeClusters"
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - "route53:ListHostedZones"
+                - "route53:ListResourceRecordSets"
+                - "route53:ChangeResourceRecordSets"
+                - "route53:GetChange"
               Resource: '*'
   - role_name: NucleatorRedshiftDeleter
     trust_policy:
@@ -98,6 +107,8 @@ role_specification:
                 - "ec2:RevokeSecurityGroupIngress"
                 - "ec2:DescribeSecurityGroups"
                 - "ec2:AuthorizeSecurityGroupEgress"
+                - "ec2:DeleteNetworkAclEntry"
+                - "ec2:DescribeNetworkAcls"
               Resource: '*'
             - Effect: Allow
               Action: 
@@ -105,4 +116,11 @@ role_specification:
                 - "redshift:DeleteClusterParameterGroup"
                 - "redshift:DeleteClusterSubnetGroup"
                 - "redshift:DescribeClusters"
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - "route53:ListHostedZones"
+                - "route53:ListResourceRecordSets"
+                - "route53:ChangeResourceRecordSets"
+                - "route53:GetChange"
               Resource: '*'
