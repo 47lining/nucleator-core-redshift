@@ -74,6 +74,7 @@ class Redshift(Command):
             "cage_name": cage,
             "customer_name": customer,
             "verbosity": kwargs.get("verbosity", None),
+            "debug_credentials": kwargs.get("debug_credentials", None),
         }
 
         extra_vars["redshift_deleting"]=kwargs.get("redshift_deleting", False)
@@ -154,7 +155,7 @@ class Redshift(Command):
         command_list.append("cage")
         command_list.append("redshift")
 
-        cli.obtain_credentials(commands = command_list, cage=cage, customer=customer, verbosity=kwargs.get("verbosity", None))
+        cli.obtain_credentials(commands = command_list, cage=cage, customer=customer, verbosity=kwargs.get("verbosity", None), debug_credentials=kwargs.get("debug_credentials", None))
         
         return cli.safe_playbook(self.get_command_playbook("redshift_provision.yml"),
                                  is_static=True, # dynamic inventory not required
