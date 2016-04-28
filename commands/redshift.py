@@ -24,11 +24,21 @@ class Redshift(Command):
     
     name = "redshift"
     
-    node_types = [ "dw1.xlarge", "dw1.8xlarge", "ds1.xlarge", "ds1.8xlarge", "dw2.large", "dw2.8xlarge", "ds2.large", "ds2.8xlarge", "dc1.large", "dc1.8xlarge" ]
-
     cluster_types = ["single-node", "multi-node"]
 
-    limits_map = {"dw1.xlarge" : (1, 32), "dw1.8xlarge" : (2, 128), "dw2.large" : (1, 32), "dw2.8xlarge" : (2, 128), "ds1.large": (1, 32), "ds1.8xlarge": (2, 128), "ds2.large": (1, 32), "ds2.8xlarge": (2, 128), "dc1.large": (2, 32), "dc1.8xlarge": (2, 100)}
+    node_types = [
+        "ds1.xlarge", "ds1.8xlarge",
+        "ds2.xlarge", "ds2.8xlarge",
+        "dc1.large", "dc1.8xlarge" ]
+
+    limits_map = {
+        "ds1.xlarge": (1, 32),
+        "ds1.8xlarge": (2, 128),
+        "ds2.xlarge": (1, 32),
+        "ds2.8xlarge": (2, 128),
+        "dc1.large": (1, 32),
+        "dc1.8xlarge": (2, 128)
+    }
 
     reserved_words = ['AES256', 'ALL', 'ALLOWOVERWRITE', 'ANALYSE', 'ANALYZE', 'AND', 'ANY', 'ARRAY', 'AS', 'ASC', 'AUTHORIZATION', 'BACKUP', 'BETWEEN', 'BINARY', 'BLANKSASNULL', 'BOTH', 'BYTEDICT', 'CASE', 'CAST', 'CHECK', 'COLLATE', 'COLUMN', 'CONSTRAINT', 'CREATE', 'CREDENTIALS', 'CROSS', 'CURRENT_DATE', 'CURRENT_TIME', 'CURRENT_TIMESTAMP', 'CURRENT_USER', 'CURRENT_USER_ID', 'DEFAULT', 'DEFERRABLE', 'DEFLATE', 'DEFRAG', 'DELTA', 'DELTA32K', 'DESC', 'DISABLE', 'DISTINCT', 'DO', 'ELSE', 'EMPTYASNULL', 'ENABLE', 'ENCODE', 'ENCRYPT', 'ENCRYPTION', 'END', 'EXCEPT', 'EXPLICIT', 'FALSE', 'FOR', 'FOREIGN', 'FREEZE', 'FROM', 'FULL', 'GLOBALDICT256', 'GLOBALDICT64K', 'GRANT', 'GROUP', 'GZIP', 'HAVING', 'IDENTITY', 'IGNORE', 'ILIKE', 'INITIALLY', 'INNER', 'INTERSECT', 'INTO', 'IS', 'ISNULL', 'JOIN', 'LEADING', 'LEFT', 'LIKE', 'LIMIT', 'LOCALTIME', 'LOCALTIMESTAMP', 'LUN', 'LUNS', 'LZO', 'LZOP', 'MINUS', 'MOSTLY13', 'MOSTLY32', 'MOSTLY8', 'NATURAL', 'NEW', 'NOT', 'NOTNULL', 'NULL', 'NULLS', 'OFF', 'OFFLINE', 'OFFSET', 'OLD', 'ON', 'ONLY', 'OPEN', 'OR', 'ORDER', 'OUTER', 'OVERLAPS', 'PARALLEL', 'PARTITION', 'PERCENT', 'PLACING', 'PRIMARY', 'RAW', 'READRATIO', 'RECOVER', 'REFERENCES', 'REJECTLOG', 'RESORT', 'RESTORE', 'RIGHT', 'SELECT', 'SESSION_USER', 'SIMILAR', 'SOME', 'SYSDATE', 'SYSTEM', 'TABLE', 'TAG', 'TDES', 'TEXT255', 'TEXT32K', 'THEN', 'TO', 'TOP', 'TRAILING', 'TRUE', 'TRUNCATECOLUMNS', 'UNION', 'UNIQUE', 'USER', 'USING', 'VERBOSE', 'WALLET', 'WHEN', 'WHERE', 'WITH', 'WITHOUT']
 
