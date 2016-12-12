@@ -1,0 +1,9 @@
+---
+
+- name: create linux users specified in siteconfig
+  user: name={{item.key}} shell=/bin/bash password={{item.value.password}} state={{item.value.state}}
+  with_dict: hostvars.localhost.nucleator_ssh_users
+
+- name: Add authorized_keys for linux users specified in siteconfig
+  authorized_key: user="{{item.key}}" key="{{ item.value.key }}"
+  with_dict: hostvars.localhost.nucleator_ssh_users

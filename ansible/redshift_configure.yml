@@ -1,0 +1,72 @@
+# Copyright 2015 47Lining LLC.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  pre_tasks:
+  - name: estabish playbook args
+    set_fact:
+      aws_environment_with_rolenames: "{{aws_environment_with_rolenames}}"
+      USERNAME: "ec2-user"
+  roles:
+    - config
+    - siteconfig
+  vars:
+    cage_name: "{{cage_name}}"
+    customer_name: "{{customer_name}}"
+    bastion_hostname: 
+  tasks:
+    - name: ensure that global dns can resolve cage
+      command: "dig +short SOA {{cage_name}}.{{customer_domain}}"
+      ignore_errors: true
+      register: hostcmd
+
+    - name: log error when cage not resolvable
+      fail: msg='Unable to use global DNS to resolve {{cage_name}}.{{customer_domain}}.  You can test this yourself by using "dig +short SOA {{cage_name}}.{{customer_domain}}".  Be sure that you have added NS records to the DNS zone file for {{customer_domain}} that delegate to the nameservers provisioned for {{cage_name}}.{{customer_domain}}.  You can find these nameservers from the AWS Route53 Management Console within the {{cage_name}}.{{customer_domain}} hosted zone".'
+      when: hostcmd.rc != 0
+
+    - name: ensure that bastion host can be looked up in dns
+      check_dns:
+        hostname: "bastion.{{cage_name}}.{{customer_domain}}"
+
+    - name: ensure that bastion host is accessible via ssh
+      check_ssh:
+        hostname: "bastion.{{cage_name}}.{{customer_domain}}"
+        key_path: "{{ nucleator_configuration_dir}}/{{ keypair_name }}.pem"
+
+- hosts: tag_NucleatorCage_{{cage_name}}:&tag_NucleatorCustomer_{{customer_name}}
+  user: ec2-user
+  connection: local
+  gather_facts: False
+
+  roles:
+    - nucleatorgroups
+
+  tasks:
+    - name: ensure that ssh config dir exists
+      file: path="{{nucleator_ssh_config_dir}}" state=directory
+
+    - name: generate ssh config
+      bastion_ssh_config:
+        dest: "{{nucleator_ssh_config_dir}}"
+        identity_file: "{{ nucleator_configuration_dir}}/{{ hostvars.localhost.keypair_name }}.pem"
+        user: "ec2-user"
+        bastion_user: "ec2-user"
+
+- hosts: MATCH_NUCLEATORGROUP__bastion
+  sudo: yes
+  roles:
+  - role: maintain-users

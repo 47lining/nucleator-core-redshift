@@ -54,16 +54,22 @@ class Redshift(Command):
         redshift_provision=redshift_subparsers.add_parser('provision', help="Provision a new nucleator redshift stackset")
         redshift_provision.add_argument("--customer", required=True, action=ValidateCustomerAction, help="Name of customer from nucleator config")
         redshift_provision.add_argument("--cage", required=True, help="Name of cage from nucleator config")
-        redshift_provision.add_argument("--cluster_name", required=True, help="Name of the redshift cluster to provision")
-        redshift_provision.add_argument("--cluster_type", required=False, help="Type of cluster to provision ('single-node' or 'multi-node') defaults to 'single-node'")
-        redshift_provision.add_argument("--num_nodes", required=False, help="Number of nodes to provision (default: 1)")
-        redshift_provision.add_argument("--node_type", required=False, help="Type of nodes to provision (default: 'dw2.large')")
+        redshift_provision.add_argument("--cluster-name", required=True, help="Name of the redshift cluster to provision")
+        redshift_provision.add_argument("--cluster-type", required=False, help="Type of cluster to provision ('single-node' or 'multi-node') defaults to 'single-node'")
+        redshift_provision.add_argument("--num-nodes", required=False, help="Number of nodes to provision (default: 1)")
+        redshift_provision.add_argument("--node-type", required=False, help="Type of nodes to provision (default: 'dw2.large')")
         redshift_provision.add_argument("--username", required=True, help="Master username for the provisioned redshift cluster")
         redshift_provision.add_argument("--password", required=True, help="Master password for the provisioned redshift cluster")
-        redshift_provision.add_argument("--database_name", required=False, help="Name of initial database to provision")
+        redshift_provision.add_argument("--database-name", required=False, help="Name of initial database to provision")
         redshift_provision.add_argument("--encrypted", required=False, help="Whether to encrypt data at rest (default: 'false')")
         redshift_provision.add_argument("--public", required=False, help="Whether the cluster can be accessed from a public network (default: 'false')")
         redshift_provision.add_argument("--port", required=False, help="The port number for the database (default: 5439)")
+        redshift_provision.add_argument("--snapshot-id", required=False, help="Launch cluster from specified snapshot")
+
+        # configure subcommand
+        redshift_configure=redshift_subparsers.add_parser('configure', help="add bastion users to enable ssh tunnels to redshift")
+        redshift_configure.add_argument("--customer", required=True, action=ValidateCustomerAction, help="Name of customer from nucleator config")
+        redshift_configure.add_argument("--cage", required=True, help="Name of cage from nucleator config")
 
         # delete subcommand
         redshift_delete=redshift_subparsers.add_parser('delete', help="delete specified nucleator redshift stackset")
@@ -160,6 +166,9 @@ class Redshift(Command):
             port_number = "5439"
         extra_vars["port_number"] = port_number
         
+        snapshot_id = kwargs.get("snapshot_id", "")
+        extra_vars["snapshot_id"] = snapshot_id
+        
         command_list = []
         command_list.append("account")
         command_list.append("cage")
@@ -168,6 +177,34 @@ class Redshift(Command):
         cli.obtain_credentials(commands = command_list, cage=cage, customer=customer, verbosity=kwargs.get("verbosity", None), debug_credentials=kwargs.get("debug_credentials", None))
         
         return cli.safe_playbook(self.get_command_playbook("redshift_provision.yml"),
+                                 is_static=True, # dynamic inventory not required
+                                 **extra_vars
+        )
+
+    def configure(self, **kwargs):
+        """
+        This command configures a new Redshift cluster in the indicated Customer Cage.
+        It installs users on the bastion host to enable tunnelling to the Redshift Cluster.
+        TODO: install users on the cluster.
+        """
+        cli = Command.get_cli(kwargs)
+        cage = kwargs.get("cage", None)
+        customer = kwargs.get("customer", None)
+        if cage is None or customer is None:
+            raise ValueError("cage and customer must be specified")
+        extra_vars={
+            "cage_name": cage,
+            "customer_name": customer,
+            "verbosity": kwargs.get("verbosity", None),
+            "debug_credentials": kwargs.get("debug_credentials", None),
+        }
+
+        command_list = []
+        command_list.append("redshift")
+
+        cli.obtain_credentials(commands = command_list, cage=cage, customer=customer, verbosity=kwargs.get("verbosity", None), debug_credentials=kwargs.get("debug_credentials", None))
+        
+        return cli.safe_playbook(self.get_command_playbook("redshift_configure.yml"),
                                  is_static=True, # dynamic inventory not required
                                  **extra_vars
         )

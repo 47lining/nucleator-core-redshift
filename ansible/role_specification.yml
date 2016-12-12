@@ -72,6 +72,7 @@ role_specification:
                 - "redshift:CreateClusterSubnetGroup"
                 - "redshift:ModifyClusterParameterGroup"
                 - "redshift:CreateCluster"
+                - "redshift:RestoreFromClusterSnapshot"
                 - "redshift:DescribeClusters"
               Resource: '*'
             - Effect: Allow

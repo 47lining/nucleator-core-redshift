@@ -49,6 +49,7 @@
       Encrypted: "{{is_encrypted}}"
       Public: "{{is_public}}"
       PortNumber: "{{port_number}}"
+      SnapshotId: "{{snapshot_id}}"
       VpcId: "{{vpc_id}}"
       NatSecurityGroupId: "{{nat_security_group_id}}"
       BastionSecurityGroupId: "{{bastion_security_group_id}}"

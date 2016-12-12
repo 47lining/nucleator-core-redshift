@@ -79,6 +79,12 @@
       "Default" : "5439"
     },
 
+    "SnapshotId" : {
+      "Description" : "If specified, snaphsot id from which to launch the cluster",
+      "Type" : "String",
+      "Default" : ""
+    },
+
     "VpcId": {
         "Type": "String",
         "Description": "ID of the Cage's Virtual Private Cloud"
@@ -142,7 +148,8 @@
   },
 
   "Conditions": {
-    "IsMultiNodeCluster": { "Fn::Equals": [ { "Ref": "ClusterType" }, "multi-node" ] }
+    "IsMultiNodeCluster": { "Fn::Equals": [ { "Ref": "ClusterType" }, "multi-node" ] },
+    "HasSnapshotId": {"Fn::Not": [ { "Fn::Equals": [ { "Ref": "SnapshotId" }, "" ] } ] }
   },
 
   "Resources": {
@@ -288,13 +295,14 @@
         "NumberOfNodes": { "Fn::If": [ "IsMultiNodeCluster", { "Ref": "NumberOfNodes" }, { "Ref": "AWS::NoValue" } ] },
         "NodeType": { "Ref": "NodeType" },
 	"Port": { "Ref" : "PortNumber" },
+        "SnapshotIdentifier": { "Fn::If": [ "HasSnapshotId", { "Ref": "SnapshotId" }, { "Ref": "AWS::NoValue" } ] },
         "DBName": { "Ref": "DatabaseName" },
         "Encrypted": { "Ref": "Encrypted" },
         "PubliclyAccessible": { "Ref": "Public" },
         "MasterUsername": { "Ref": "MasterUsername" },
         "MasterUserPassword": { "Ref": "MasterUserPassword" },
         "ClusterParameterGroupName": { "Ref": "RedshiftClusterParameterGroup" },
-		"ClusterSubnetGroupName" : { "Ref": "RedshiftDBSubnetGroup"},
+	"ClusterSubnetGroupName" : { "Ref": "RedshiftDBSubnetGroup"},
         "VpcSecurityGroupIds" : [ { "Ref" : "RedshiftSecurityGroup" } ]
       },
       "DeletionPolicy": "Snapshot"
