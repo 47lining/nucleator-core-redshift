@@ -166,8 +166,11 @@ class Redshift(Command):
             port_number = "5439"
         extra_vars["port_number"] = port_number
         
-        snapshot_id = kwargs.get("snapshot_id", "")
-        extra_vars["snapshot_id"] = snapshot_id
+        snapshot_id = kwargs.get("snapshot_id", None)
+        if snapshot_id is None:
+            snapshot_id = ""
+        else:
+            extra_vars["snapshot_id"] = snapshot_id
         
         command_list = []
         command_list.append("account")
